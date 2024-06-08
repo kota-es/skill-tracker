@@ -18,6 +18,13 @@ func NewUserController(container *containers.ServiceContainer) *UserController {
 func (c *UserController) PostUser(w http.ResponseWriter, r *http.Request) {
 	reqUser := models.User{}
 	json.NewDecoder(r.Body).Decode(&reqUser)
+
+	err := reqUser.Validate()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	user, err := c.services.User.Create(reqUser)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
