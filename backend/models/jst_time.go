@@ -33,3 +33,8 @@ func (j *JstTime) UnmarshalJSON(data []byte) error {
 	j.Time = t
 	return nil
 }
+
+func (t JstTime) String() string {
+	loc, _ := time.LoadLocation(JST_TIME_ZONE)
+	return t.Time.In(loc).Format(time.RFC3339)
+}
