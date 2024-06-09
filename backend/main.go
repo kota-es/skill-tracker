@@ -34,11 +34,13 @@ func main() {
 
 	serviceContainer := containers.NewServiceContainer(db)
 	userController := controllers.NewUserController(serviceContainer)
+	authController := controllers.NewAuthController(serviceContainer)
 
 	http.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello World")
 	})
 	http.HandleFunc("POST /users", userController.PostUser)
+	http.HandleFunc("POST /login", authController.Login)
 
 	http.ListenAndServe(":8080", nil)
 }

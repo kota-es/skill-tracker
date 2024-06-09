@@ -35,3 +35,24 @@ func InsertUser(db *sql.DB, user models.User) (models.User, error) {
 
 	return user, nil
 }
+
+func FindUserByEmail(db *sql.DB, email string) (models.User, error) {
+	sqlStr := "SELECT * FROM users WHERE email = $1"
+
+	row := db.QueryRow(sqlStr, email)
+	if row.Err() != nil {
+		return models.User{}, row.Err()
+	}
+
+	var user models.User
+	var createdAt, updatedAt time.Time
+	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.LastName, &user.FirstName, &user.Role, &createdAt, &updatedAt)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user.CreatedAt = models.JstTime{Time: createdAt}
+	user.UpdatedAt = models.JstTime{Time: updatedAt}
+
+	return user, nil
+}

@@ -23,3 +23,13 @@ func (us *UserService) Create(user models.User) (models.User, error) {
 
 	return user, nil
 }
+
+func (us *UserService) FindByEmail(email string) (models.User, error) {
+	user, err := repositories.FindUserByEmail(us.db, email)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
