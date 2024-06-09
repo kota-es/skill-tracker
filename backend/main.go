@@ -41,6 +41,7 @@ func main() {
 	})
 	http.HandleFunc("POST /users", userController.PostUser)
 	http.HandleFunc("POST /login", authController.Login)
+	http.HandleFunc("GET /users/me", authController.Me)
 
 	http.ListenAndServe(":8080", nil)
 }

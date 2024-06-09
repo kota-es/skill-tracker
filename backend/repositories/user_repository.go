@@ -3,6 +3,7 @@ package repositories
 import (
 	"backend/models"
 	"database/sql"
+	"log"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -53,6 +54,29 @@ func FindUserByEmail(db *sql.DB, email string) (models.User, error) {
 
 	user.CreatedAt = models.JstTime{Time: createdAt}
 	user.UpdatedAt = models.JstTime{Time: updatedAt}
+
+	return user, nil
+}
+
+func FindUserByID(db *sql.DB, id int) (models.User, error) {
+	sqlStr := "SELECT * FROM users WHERE id = $1"
+
+	row := db.QueryRow(sqlStr, id)
+	if row.Err() != nil {
+		return models.User{}, row.Err()
+	}
+
+	var user models.User
+	var createdAt, updatedAt time.Time
+	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.LastName, &user.FirstName, &user.Role, &createdAt, &updatedAt)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	user.CreatedAt = models.JstTime{Time: createdAt}
+	user.UpdatedAt = models.JstTime{Time: updatedAt}
+
+	log.Println(user)
 
 	return user, nil
 }

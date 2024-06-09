@@ -33,3 +33,13 @@ func (us *UserService) FindByEmail(email string) (models.User, error) {
 
 	return user, nil
 }
+
+func (us *UserService) FindByID(id int) (models.User, error) {
+	user, err := repositories.FindUserByID(us.db, id)
+
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}

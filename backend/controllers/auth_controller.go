@@ -54,3 +54,43 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("Login successful"))
 }
+
+func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("access_token")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	tokenString := cookie.Value
+	claims, err := c.services.Auth.VerifyToken(tokenString)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	id, ok := claims["id"].(float64)
+	if !ok {
+		http.Error(w, "Invalid token claims", http.StatusBadRequest)
+		return
+	}
+
+	userID := int(id)
+
+	user, err := c.services.User.FindByID(userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	filteredUser := models.FilteredUser{
+		ID:        user.ID,
+		Email:     user.Email,
+		LastName:  user.LastName,
+		FirstName: user.FirstName,
+		Role:      user.Role,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	json.NewEncoder(w).Encode(filteredUser)
+}

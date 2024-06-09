@@ -31,3 +31,15 @@ func (as *AuthService) CreateToken(user models.User) (string, error) {
 
 	return accessToken, nil
 }
+
+func (as *AuthService) VerifyToken(accessToken string) (jwt.MapClaims, error) {
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(accessToken, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return claims, nil
+}
