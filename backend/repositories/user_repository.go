@@ -29,6 +29,7 @@ func InsertUser(db *sql.DB, user models.User) (models.User, error) {
 		return models.User{}, err
 	}
 
+	user.ID = userID
 	user.CreatedAt = models.JstTime{Time: createdAt}
 	user.UpdatedAt = models.JstTime{Time: updatedAt}
 
