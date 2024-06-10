@@ -1,0 +1,49 @@
+.loginBg {
+  width: 100vw;
+  height: 100vh;
+  background-color: lightgray;
+  display: grid;
+  place-items: center;
+}
+
+.loginContainer {
+  display: grid;
+  gap: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  width: fit-content;
+  height: fit-content;
+  background-color: #fff;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  width: 300px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.loginForm {
+  display: grid;
+  gap: 20px;
+
+  .inputGroup {
+    display: grid;
+    gap: 5px;
+
+    input {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  }
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+}
