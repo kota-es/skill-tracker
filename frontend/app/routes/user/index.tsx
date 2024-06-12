@@ -2,7 +2,11 @@ import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const res = await fetch("http://localhost:8080/users/me", {
+  const BASE_URL = import.meta.env.VITE_API_ORIGIN;
+
+  console.log(request.headers.get("Cookie"));
+
+  const res = await fetch(`${BASE_URL}/users/me`, {
     method: "GET",
     headers: {
       Cookie: request.headers.get("Cookie") || "",

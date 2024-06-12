@@ -10,13 +10,18 @@ export async function action({ request }: ActionFunctionArgs) {
     password: formData.get("password"),
   };
 
-  const res = await fetch("http://localhost:8080/login", {
+  const BASE_URL = import.meta.env.VITE_API_ORIGIN;
+
+  const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(sendData),
   });
+
+  console.log(res.status);
+  console.log(res.headers.get("Set-Cookie"));
 
   if (res.status === 200) {
     const cookieData = res.headers.get("Set-Cookie");

@@ -5,6 +5,8 @@ import (
 	"backend/models"
 	"encoding/json"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -41,12 +43,18 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookieSecure, err := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	cookie := http.Cookie{
 		Name:     "access_token",
 		Value:    token,
 		Expires:  time.Now().Add(48 * time.Hour),
 		HttpOnly: true,
-		Secure:   true, // 開発環境ではfalse、運用環境ではtrue
+		Secure:   cookieSecure, // 開発環境ではfalse、運用環境ではtrue
 		Path:     "/",
 	}
 
