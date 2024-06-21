@@ -1,6 +1,7 @@
 package services
 
 import (
+	"backend/apperrors"
 	"backend/models"
 	"os"
 	"time"
@@ -26,6 +27,7 @@ func (as *AuthService) CreateToken(user models.User) (string, error) {
 
 	accessToken, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
+		err = apperrors.CreateTokenFailed.Wrap(err, "failed to create token")
 		return "", err
 	}
 
@@ -38,6 +40,7 @@ func (as *AuthService) VerifyToken(accessToken string) (jwt.MapClaims, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
+		err = apperrors.VerifyTokenFailed.Wrap(err, "failed to verify token")
 		return nil, err
 	}
 

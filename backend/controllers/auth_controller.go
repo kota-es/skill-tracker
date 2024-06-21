@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/apperrors"
 	"backend/containers"
 	"backend/models"
 	"encoding/json"
@@ -26,6 +27,7 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.services.User.FindByEmail(reqUser.Email)
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -33,18 +35,21 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(reqUser.Password))
 
 	if err != nil {
-		http.Error(w, "パスワードが違います", http.StatusBadRequest)
+		apperrors.ErrorHandler(w, r, err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	token, err := c.services.Auth.CreateToken(user)
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	cookieSecure, err := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -66,18 +71,21 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 	cookie, err := r.Cookie("access_token")
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 	tokenString := cookie.Value
 	claims, err := c.services.Auth.VerifyToken(tokenString)
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	id, ok := claims["id"].(float64)
 	if !ok {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, "Invalid token claims", http.StatusBadRequest)
 		return
 	}
@@ -86,6 +94,7 @@ func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.services.User.FindByID(userID)
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

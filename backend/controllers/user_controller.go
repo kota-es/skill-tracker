@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/apperrors"
 	"backend/containers"
 	"backend/models"
 	"encoding/json"
@@ -27,6 +28,7 @@ func (c *UserController) PostUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := c.services.User.Create(reqUser)
 	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
