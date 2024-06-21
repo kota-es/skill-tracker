@@ -25,7 +25,8 @@ func main() {
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
-	dbConn := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", dbUser, dbPassword, dbHost, dbName)
+	sslMode := os.Getenv("POSTGRES_SSL_MODE")
+	dbConn := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=%s", dbUser, dbPassword, dbHost, dbName, sslMode)
 	db, err := sql.Open("postgres", dbConn)
 	if err != nil {
 		log.Fatal(err)
