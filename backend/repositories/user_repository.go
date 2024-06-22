@@ -3,7 +3,6 @@ package repositories
 import (
 	"backend/models"
 	"database/sql"
-	"log"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -11,14 +10,14 @@ import (
 )
 
 func InsertUser(db *sql.DB, user models.User) (models.User, error) {
-	sqlStr := "INSERT INTO users (email, password, lastname, firstname, role) VALUES ($1, $2, $3, $4, $5) returning id, created_at, updated_at"
+	sqlStr := "INSERT INTO users (email, password, lastname, firstname, lastname_kana, firstname_kana,role) VALUES ($1, $2, $3, $4, $5, $6, $7) returning id, created_at, updated_at"
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return models.User{}, err
 	}
 
-	row := db.QueryRow(sqlStr, user.Email, hashedPassword, user.LastName, user.FirstName, user.Role)
+	row := db.QueryRow(sqlStr, user.Email, hashedPassword, user.LastName, user.FirstName, user.LastNameKana, user.FirstNameKana, user.Role)
 	if row.Err() != nil {
 		return models.User{}, row.Err()
 	}
@@ -47,7 +46,7 @@ func FindUserByEmail(db *sql.DB, email string) (models.User, error) {
 
 	var user models.User
 	var createdAt, updatedAt time.Time
-	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.LastName, &user.FirstName, &user.Role, &createdAt, &updatedAt)
+	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.LastName, &user.FirstName, &user.LastNameKana, &user.FirstNameKana, &user.Role, &createdAt, &updatedAt)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -68,15 +67,13 @@ func FindUserByID(db *sql.DB, id int) (models.User, error) {
 
 	var user models.User
 	var createdAt, updatedAt time.Time
-	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.LastName, &user.FirstName, &user.Role, &createdAt, &updatedAt)
+	err := row.Scan(&user.ID, &user.Email, &user.Password, &user.LastName, &user.FirstName, &user.LastNameKana, &user.FirstNameKana, &user.Role, &createdAt, &updatedAt)
 	if err != nil {
 		return models.User{}, err
 	}
 
 	user.CreatedAt = models.JstTime{Time: createdAt}
 	user.UpdatedAt = models.JstTime{Time: updatedAt}
-
-	log.Println(user)
 
 	return user, nil
 }

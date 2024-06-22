@@ -6,14 +6,16 @@ import (
 )
 
 type User struct {
-	ID        int     `json:"id"`
-	Email     string  `json:"email"`
-	Password  string  `json:"password"`
-	LastName  string  `json:"lastname"`
-	FirstName string  `json:"firstname"`
-	Role      string  `json:"role"`
-	CreatedAt JstTime `json:"created_at"`
-	UpdatedAt JstTime `json:"updated_at"`
+	ID            int     `json:"id"`
+	Email         string  `json:"email"`
+	Password      string  `json:"password"`
+	LastName      string  `json:"lastname"`
+	FirstName     string  `json:"firstname"`
+	LastNameKana  string  `json:"lastname_kana"`
+	FirstNameKana string  `json:"firstname_kana"`
+	Role          string  `json:"role"`
+	CreatedAt     JstTime `json:"created_at"`
+	UpdatedAt     JstTime `json:"updated_at"`
 }
 
 func (u User) Validate() error {
@@ -34,6 +36,14 @@ func (u User) Validate() error {
 		validation.Field(
 			&u.FirstName,
 			validation.Required.Error("名は必須です"),
+		),
+		validation.Field(
+			&u.LastNameKana,
+			validation.Required.Error("姓かなは必須です"),
+		),
+		validation.Field(
+			&u.FirstNameKana,
+			validation.Required.Error("名かなは必須です"),
 		),
 		validation.Field(
 			&u.Role,
