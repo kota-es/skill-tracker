@@ -20,9 +20,6 @@ export async function action({ request }: ActionFunctionArgs) {
     body: JSON.stringify(sendData),
   });
 
-  console.log(res.status);
-  console.log(res.headers.get("Set-Cookie"));
-
   if (res.status === 200) {
     const cookieData = res.headers.get("Set-Cookie");
 
@@ -49,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
         "; Secure"
     );
 
-    return redirect("/user", { headers });
+    return redirect("/", { headers });
   }
 
   return null;

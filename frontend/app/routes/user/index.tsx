@@ -1,10 +1,9 @@
+import Header from "@/components/Header";
 import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
-
-  console.log(request.headers.get("Cookie"));
 
   const res = await fetch(`${BASE_URL}/users/me`, {
     method: "GET",
@@ -28,7 +27,9 @@ export default function UserPage() {
 
   return (
     <div>
-      <h1>User Page</h1>
+      <div>
+        <Header />
+      </div>
       <ul>
         <li>{user.email}</li>
         <li>
