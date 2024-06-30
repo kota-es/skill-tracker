@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"backend/models"
+	"backend/models/shared"
+
 	"database/sql"
 	"time"
 
@@ -30,8 +32,8 @@ func InsertUser(db *sql.DB, user models.User) (models.User, error) {
 	}
 
 	user.ID = userID
-	user.CreatedAt = models.JstTime{Time: createdAt}
-	user.UpdatedAt = models.JstTime{Time: updatedAt}
+	user.CreatedAt = shared.JstTime{Time: createdAt}
+	user.UpdatedAt = shared.JstTime{Time: updatedAt}
 
 	return user, nil
 }
@@ -51,8 +53,8 @@ func FindUserByEmail(db *sql.DB, email string) (models.User, error) {
 		return models.User{}, err
 	}
 
-	user.CreatedAt = models.JstTime{Time: createdAt}
-	user.UpdatedAt = models.JstTime{Time: updatedAt}
+	user.CreatedAt = shared.JstTime{Time: createdAt}
+	user.UpdatedAt = shared.JstTime{Time: updatedAt}
 
 	return user, nil
 }
@@ -72,8 +74,8 @@ func FindUserByID(db *sql.DB, id int) (models.User, error) {
 		return models.User{}, err
 	}
 
-	user.CreatedAt = models.JstTime{Time: createdAt}
-	user.UpdatedAt = models.JstTime{Time: updatedAt}
+	user.CreatedAt = shared.JstTime{Time: createdAt}
+	user.UpdatedAt = shared.JstTime{Time: updatedAt}
 
 	return user, nil
 }

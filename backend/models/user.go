@@ -1,21 +1,23 @@
 package models
 
 import (
+	"backend/models/shared"
+
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type User struct {
-	ID            int     `json:"id"`
-	Email         string  `json:"email"`
-	Password      string  `json:"password"`
-	LastName      string  `json:"lastname"`
-	FirstName     string  `json:"firstname"`
-	LastNameKana  string  `json:"lastname_kana"`
-	FirstNameKana string  `json:"firstname_kana"`
-	Role          string  `json:"role"`
-	CreatedAt     JstTime `json:"created_at"`
-	UpdatedAt     JstTime `json:"updated_at"`
+	ID            int            `json:"id"`
+	Email         string         `json:"email"`
+	Password      string         `json:"password"`
+	LastName      string         `json:"lastname"`
+	FirstName     string         `json:"firstname"`
+	LastNameKana  string         `json:"lastname_kana"`
+	FirstNameKana string         `json:"firstname_kana"`
+	Role          string         `json:"role"`
+	CreatedAt     shared.JstTime `json:"created_at"`
+	UpdatedAt     shared.JstTime `json:"updated_at"`
 }
 
 func (u User) Validate() error {

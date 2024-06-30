@@ -36,6 +36,7 @@ func main() {
 	serviceContainer := containers.NewServiceContainer(db)
 	userController := controllers.NewUserController(serviceContainer)
 	authController := controllers.NewAuthController(serviceContainer)
+	skillController := controllers.NewSkillController(serviceContainer)
 
 	http.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello World")
@@ -43,6 +44,7 @@ func main() {
 	http.HandleFunc("POST /users", userController.PostUser)
 	http.HandleFunc("POST /login", authController.Login)
 	http.HandleFunc("GET /users/me", authController.Me)
+	http.HandleFunc("POST /admin/skills", skillController.PostSkill)
 
 	http.ListenAndServe(":8080", nil)
 }

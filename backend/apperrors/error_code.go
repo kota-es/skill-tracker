@@ -6,6 +6,8 @@ const (
 	Unknown ErrCode = "U000"
 	hoge    string  = "hoge"
 
+	TransactinoFailed ErrCode = "D001"
+
 	InsertDataFailed ErrCode = "S001"
 	GetDataFailed    ErrCode = "S002"
 	NoData           ErrCode = "S003"
