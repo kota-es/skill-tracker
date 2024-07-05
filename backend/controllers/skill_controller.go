@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/apperrors"
 	"backend/containers"
 	"backend/models/requests"
 	"backend/models/responses"
@@ -22,13 +23,14 @@ func (c *SkillController) PostSkill(w http.ResponseWriter, r *http.Request) {
 
 	err := reqSkill.Validate()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		err = apperrors.BadParam.Wrap(err, err.Error())
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 
 	skill, skillLevels, err := c.services.Skill.Create(reqSkill)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 

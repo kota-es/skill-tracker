@@ -22,14 +22,14 @@ func (c *UserController) PostUser(w http.ResponseWriter, r *http.Request) {
 
 	err := reqUser.Validate()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		err = apperrors.BadParam.Wrap(err, err.Error())
+		apperrors.ErrorHandler(w, r, err)
 		return
 	}
 
 	user, err := c.services.User.Create(reqUser)
 	if err != nil {
 		apperrors.ErrorHandler(w, r, err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

@@ -85,8 +85,8 @@ func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 
 	id, ok := claims["id"].(float64)
 	if !ok {
+		apperrors.BadParam.Wrap(err, "request must be number")
 		apperrors.ErrorHandler(w, r, err)
-		http.Error(w, "Invalid token claims", http.StatusBadRequest)
 		return
 	}
 
