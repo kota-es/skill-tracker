@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Form, json, useActionData, useLoaderData } from "@remix-run/react";
-import styles from "./index.module.scss";
+import { Form, json, useLoaderData } from "@remix-run/react";
 import Header from "@/components/Header";
 import Button from "@/components/shared/Button";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { jsonWithSuccess, jsonWithError } from "remix-toast";
 
 import type { SkillCategoryType } from "@/types/skillCategory";
+
+import styles from "@/styles/routes/admin.skill.create.module.scss";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();

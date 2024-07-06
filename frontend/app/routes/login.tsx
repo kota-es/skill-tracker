@@ -1,6 +1,7 @@
 import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Form } from "@remix-run/react";
-import styles from "./index.module.scss";
+
+import styles from "@/styles/routes/login.module.scss";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
