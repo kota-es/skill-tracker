@@ -6,6 +6,7 @@ import (
 	"backend/models/requests"
 	"backend/repositories"
 	"database/sql"
+	"log"
 )
 
 type SkillService struct {
@@ -73,4 +74,15 @@ func (ss *SkillService) Create(reqSkill requests.NewSkillRequest) (models.Skill,
 	}
 
 	return newSkill, skillLevels, nil
+}
+
+func (ss *SkillService) GetCategories() ([]models.SkillCategory, error) {
+	categories, err := repositories.GetSkillCategories(ss.db)
+	if err != nil {
+		log.Printf("Failed to fetch skill categories: %v", err.Error())
+		err = apperrors.GetDataFailed.Wrap(err, "failed to fetch skill categories")
+		return nil, err
+	}
+
+	return categories, nil
 }

@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Form } from "@remix-run/react";
+import React, { useState } from "react";
+import { Form, json, useActionData, useLoaderData } from "@remix-run/react";
 import styles from "./index.module.scss";
 import Header from "@/components/Header";
 import Button from "@/components/shared/Button";
 import { ActionFunctionArgs } from "@remix-run/node";
-import { jsonWithSuccess } from "remix-toast";
-interface SkillCategory {
-  id: number;
-  name: string;
-}
+import { jsonWithSuccess, jsonWithError } from "remix-toast";
+
+import type { SkillCategoryType } from "@/types/skillCategory";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
@@ -16,7 +14,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     name: formData.get("name"),
     description: formData.get("description"),
     is_new_category: formData.get("skill_category_option") === "new",
-    skill_category_id: formData.get("skill_category_id"),
+    skill_category_id: Number(formData.get("skill_category_id")),
     skill_category_name: formData.get("skill_category_name"),
     level_explanation: [
       { level: 1, explanation: formData.get("level1") },
@@ -27,6 +25,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ],
   };
 
+  console.log(sendData);
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
 
   const res = await fetch(`${BASE_URL}/admin/skills`, {
@@ -36,19 +35,26 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
     body: JSON.stringify(sendData),
   });
-
-  if (res.status === 200) {
-    return { status: 200, headers: { Location: "/admin/skills" } };
+  const result = await res.json();
+  if (res.ok) {
+    return jsonWithSuccess({ result: result }, "スキルの登録が完了しました。");
+  } else {
+    return jsonWithError({ result: result }, "スキルの登録に失敗しました");
   }
+};
 
-  return jsonWithSuccess(
-    { result: "Data saved successfully" },
-    "Operation successful! 🎉"
-  );
+export const loader = async () => {
+  const BASE_URL = import.meta.env.VITE_API_ORIGIN;
+  const res = await fetch(`${BASE_URL}/skills/categories`);
+
+  if (res.ok) {
+    const data: Array<SkillCategoryType> = await res.json();
+    return json({ skillCategories: data });
+  }
 };
 
 const SkillCreate: React.FC = () => {
-  const [skillCategories, setSkillCategories] = useState<SkillCategory[]>([]);
+  const { skillCategories } = useLoaderData<typeof loader>();
   const [categoryOption, setCategoryOption] = useState<"existing" | "new">(
     "existing"
   );
@@ -67,7 +73,7 @@ const SkillCreate: React.FC = () => {
         <Form method="POST" className={styles.form}>
           <div className={styles.formGroup}>
             <label>スキル名:</label>
-            <input type="text" name="name" required />
+            <input type="text" name="name" />
           </div>
 
           <div className={styles.formGroup}>
@@ -95,7 +101,7 @@ const SkillCreate: React.FC = () => {
               </label>
             </div>
             {categoryOption === "existing" && (
-              <select name="skill_category_id ">
+              <select name="skill_category_id">
                 <option value="">カテゴリを選択</option>
                 {skillCategories.map((category) => (
                   <option key={category.id} value={category.id}>
@@ -109,7 +115,6 @@ const SkillCreate: React.FC = () => {
                 type="text"
                 name="skill_category_name"
                 placeholder="カテゴリ名を入力"
-                required
               />
             )}
           </div>
@@ -124,7 +129,7 @@ const SkillCreate: React.FC = () => {
             {[1, 2, 3, 4, 5].map((level, index) => (
               <div key={index} className="level-description">
                 <label>レベル {index + 1}:</label>
-                <textarea name={`level${level}`} required />
+                <textarea name={`level${level}`} />
               </div>
             ))}
           </div>

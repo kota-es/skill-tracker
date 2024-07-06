@@ -49,3 +49,13 @@ func (c *SkillController) PostSkill(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 
 }
+
+func (c *SkillController) GetSkillCategories(w http.ResponseWriter, r *http.Request) {
+	categories, err := c.services.Skill.GetCategories()
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(categories)
+}

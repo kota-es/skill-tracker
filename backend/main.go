@@ -45,6 +45,7 @@ func main() {
 	http.HandleFunc("POST /login", authController.Login)
 	http.HandleFunc("GET /users/me", authController.Me)
 	http.HandleFunc("POST /admin/skills", skillController.PostSkill)
+	http.HandleFunc("GET /skills/categories", skillController.GetSkillCategories)
 
 	http.ListenAndServe(":8080", nil)
 }
