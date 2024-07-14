@@ -1,8 +1,7 @@
 package main
 
 import (
-	"backend/containers"
-	"backend/controllers"
+	"backend/api"
 	"database/sql"
 	"fmt"
 	"log"
@@ -10,6 +9,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+
 	_ "github.com/lib/pq"
 )
 
@@ -33,22 +33,7 @@ func main() {
 		return
 	}
 
-	serviceContainer := containers.NewServiceContainer(db)
-	userController := controllers.NewUserController(serviceContainer)
-	authController := controllers.NewAuthController(serviceContainer)
-	skillController := controllers.NewSkillController(serviceContainer)
+	r := api.NewRouter(db)
 
-	http.HandleFunc("GET /hello", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello World")
-	})
-	http.HandleFunc("POST /users", userController.PostUser)
-	http.HandleFunc("POST /login", authController.Login)
-	http.HandleFunc("GET /users/me", authController.Me)
-	http.HandleFunc("GET /skills", skillController.GetAllSkills)
-	http.HandleFunc("GET /users/skills", skillController.GetUserSkills)
-	http.HandleFunc("POST /users/skills", skillController.PostUserSkill)
-	http.HandleFunc("POST /admin/skills", skillController.PostSkill)
-	http.HandleFunc("GET /skills/categories", skillController.GetSkillCategories)
-
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", r)
 }

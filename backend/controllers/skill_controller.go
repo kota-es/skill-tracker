@@ -7,6 +7,9 @@ import (
 	"backend/models/responses"
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type SkillController struct {
@@ -71,10 +74,16 @@ func (c *SkillController) GetAllSkills(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *SkillController) GetUserSkills(w http.ResponseWriter, r *http.Request) {
-	request := requests.GetUserSkillRequest{}
-	json.NewDecoder(r.Body).Decode(&request)
+	strUserId := chi.URLParam(r, "user_id")
 
-	skills, err := c.services.Skill.GetUserSkills(request.UserID)
+	userId, err := strconv.Atoi(strUserId)
+	if err != nil {
+		err = apperrors.BadParam.Wrap(err, "user_id must be number")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	skills, err := c.services.Skill.GetUserSkills(userId)
 	if err != nil {
 		apperrors.ErrorHandler(w, r, err)
 		return

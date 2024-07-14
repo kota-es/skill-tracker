@@ -20,7 +20,7 @@ func GetUserSkills(db *sql.DB, UserID int) ([]models.UserSkill, error) {
 	for rows.Next() {
 		var userSkill models.UserSkill
 		var CreatedAt, UpdatedAt time.Time
-		err := rows.Scan(&userSkill.ID, &userSkill.UserID, &userSkill.SkillID, &CreatedAt, &UpdatedAt)
+		err := rows.Scan(&userSkill.ID, &userSkill.UserID, &userSkill.SkillID, &userSkill.Level, &userSkill.Interested, &CreatedAt, &UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
