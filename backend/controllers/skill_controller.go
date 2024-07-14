@@ -59,3 +59,46 @@ func (c *SkillController) GetSkillCategories(w http.ResponseWriter, r *http.Requ
 
 	json.NewEncoder(w).Encode(categories)
 }
+
+func (c *SkillController) GetAllSkills(w http.ResponseWriter, r *http.Request) {
+	skills, err := c.services.Skill.GetAllSkills()
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(skills)
+}
+
+func (c *SkillController) GetUserSkills(w http.ResponseWriter, r *http.Request) {
+	request := requests.GetUserSkillRequest{}
+	json.NewDecoder(r.Body).Decode(&request)
+
+	skills, err := c.services.Skill.GetUserSkills(request.UserID)
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(skills)
+}
+
+func (c *SkillController) PostUserSkill(w http.ResponseWriter, r *http.Request) {
+	request := requests.PostUserSkillRequest{}
+	json.NewDecoder(r.Body).Decode(&request)
+
+	err := request.Validate()
+	if err != nil {
+		err = apperrors.BadParam.Wrap(err, err.Error())
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	err = c.services.Skill.UpdateUserSkill(request)
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+}

@@ -44,6 +44,9 @@ func main() {
 	http.HandleFunc("POST /users", userController.PostUser)
 	http.HandleFunc("POST /login", authController.Login)
 	http.HandleFunc("GET /users/me", authController.Me)
+	http.HandleFunc("GET /skills", skillController.GetAllSkills)
+	http.HandleFunc("GET /users/skills", skillController.GetUserSkills)
+	http.HandleFunc("POST /users/skills", skillController.PostUserSkill)
 	http.HandleFunc("POST /admin/skills", skillController.PostSkill)
 	http.HandleFunc("GET /skills/categories", skillController.GetSkillCategories)
 

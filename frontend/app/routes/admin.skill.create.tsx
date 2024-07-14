@@ -26,7 +26,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     ],
   };
 
-  console.log(sendData);
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
 
   const res = await fetch(`${BASE_URL}/admin/skills`, {

@@ -86,3 +86,60 @@ func (ss *SkillService) GetCategories() ([]models.SkillCategory, error) {
 
 	return categories, nil
 }
+
+func (ss *SkillService) GetAllSkills() ([]models.Skill, error) {
+	skills, err := repositories.GetAllSkills(ss.db)
+	if err != nil {
+		log.Printf("Failed to fetch skills: %v", err.Error())
+		err = apperrors.GetDataFailed.Wrap(err, "failed to fetch skills")
+		return nil, err
+	}
+
+	return skills, nil
+}
+
+func (ss *SkillService) GetUserSkills(userID int) ([]models.UserSkill, error) {
+	userSkills, err := repositories.GetUserSkills(ss.db, userID)
+	if err != nil {
+		log.Printf("Failed to fetch user skills: %v", err.Error())
+		err = apperrors.GetDataFailed.Wrap(err, "failed to fetch user skills")
+		return nil, err
+	}
+
+	return userSkills, nil
+}
+
+func (ss *SkillService) UpdateUserSkill(skillRequest requests.PostUserSkillRequest) error {
+	tx, err := ss.db.Begin()
+	if err != nil {
+		apperrors.TransactinoFailed.Wrap(err, "failed to start transaction")
+		log.Printf("Failed to start transaction: %v", err.Error())
+		return err
+	}
+	defer tx.Rollback()
+
+	for _, skill := range skillRequest.Skills {
+		userSkill := models.UserSkill{
+			UserID:     skillRequest.UserID,
+			SkillID:    skill.SkillID,
+			Level:      skill.Level,
+			Interested: skill.Interested,
+		}
+
+		_, err := repositories.UpSertUserSkill(tx, ss.db, userSkill)
+		if err != nil {
+			apperrors.InsertDataFailed.Wrap(err, "failed to update user skill")
+			log.Printf("Failed to update user skill: %v", err.Error())
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		apperrors.TransactinoFailed.Wrap(err, "failed to commit transaction")
+		log.Printf("Failed to commit transaction: %v", err.Error())
+		return err
+	}
+
+	return nil
+}
