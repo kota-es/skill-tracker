@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import styles from "@/styles/routes/user.skill.register.module.scss";
 import Header from "@/components/Header";
 import { Form, json, useLoaderData } from "@remix-run/react";
 import { ActionFunctionArgs } from "@remix-run/node";
 import Button from "@/components/shared/Button";
+import { jsonWithError, jsonWithSuccess } from "remix-toast";
 
 type SkillCategoryType = {
   id: number;
@@ -16,6 +17,18 @@ type Skill = {
   name: string;
   skill_category_id: number;
   description: string;
+  level?: number;
+  interested?: boolean;
+};
+
+type UserSkill = {
+  id: number;
+  user_id: number;
+  skill_id: number;
+  level: number;
+  interested: boolean;
+  created_at: string;
+  updated_at: string;
 };
 
 type Request = {
@@ -44,14 +57,26 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     if (type === "level") {
-      skill.level = value;
+      skill.level = Number(value);
     } else if (type === "interested") {
       skill.interested = true;
     }
   });
 
-  console.log("Send Data:", sendData);
-  return json({ success: true });
+  const BASE_URL = import.meta.env.VITE_API_ORIGIN;
+  const res = await fetch(`${BASE_URL}/users/skills`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(sendData),
+  });
+
+  if (res.ok) {
+    return jsonWithSuccess({ result: null }, "スキルの登録が完了しました。");
+  } else {
+    return jsonWithError({ result: null }, "スキルの登録に失敗しました");
+  }
 };
 
 export const loader = async () => {
@@ -81,10 +106,33 @@ export const loader = async () => {
     skills = await SkillsRes.json();
   }
 
+  // TODO: ユーザーIDを取得する
+  const UserSkillRes = await fetch(`${BASE_URL}/users/1/skills`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  let userSkills: UserSkill[] = [];
+  if (UserSkillRes.ok) {
+    userSkills = await UserSkillRes.json();
+  }
+
   const skillData = skillCategories.map((category) => {
     category.skills = skills.filter(
       (skill) => skill.skill_category_id === category.id
     );
+    category.skills = category.skills.map((skill) => {
+      const userSkill = userSkills.find(
+        (userSkill) => userSkill.skill_id === skill.id
+      );
+      if (userSkill) {
+        skill.level = userSkill.level;
+        skill.interested = userSkill.interested;
+      }
+      return skill;
+    });
     return category;
   });
 
@@ -92,12 +140,7 @@ export const loader = async () => {
 };
 
 const SkillForm: React.FC = () => {
-  const [skillLevels, setSkillLevels] = useState<{ [key: string]: number }>({});
   const { skillData: categories } = useLoaderData<typeof loader>();
-
-  const handleLevelChange = (skillName: string, level: number) => {
-    setSkillLevels({ ...skillLevels, [skillName]: level });
-  };
 
   return (
     <>
@@ -118,8 +161,7 @@ const SkillForm: React.FC = () => {
                           type="radio"
                           name={`level_${skill.id}`}
                           value={level}
-                          checked={skillLevels[skill.name] === level}
-                          onChange={() => handleLevelChange(skill.name, level)}
+                          defaultChecked={skill.level === level}
                           className={styles.levelInput}
                         />
                         {level}
@@ -131,6 +173,7 @@ const SkillForm: React.FC = () => {
                       type="checkbox"
                       name={`interested_${skill.id}`}
                       value="true"
+                      defaultChecked={skill.interested}
                       className={styles.interestInput}
                     />
                     関心あり
