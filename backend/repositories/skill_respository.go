@@ -51,7 +51,7 @@ func GetAllSkills(db *sql.DB) ([]models.Skill, error) {
 
 func UpSertUserSkill(tx *sql.Tx, db *sql.DB, userSkill models.UserSkill) (models.UserSkill, error) {
 	log.Printf("userSkill: %v", userSkill)
-	sqlStr := "INSERT INTO user_skills (user_id, skill_id, level, interested) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, skill_id) DO UPDATE SET level = $3, interested = $4 RETURNING id"
+	sqlStr := "INSERT INTO user_skills (user_id, skill_id, level, interested) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, skill_id) DO UPDATE SET level = $3, interested = $4, updated_at = now() RETURNING id"
 
 	var id int
 	err := tx.QueryRow(sqlStr, userSkill.UserID, userSkill.SkillID, userSkill.Level, userSkill.Interested).Scan(&id)
