@@ -1,0 +1,655 @@
+openapi: 3.0.0
+info:
+  title: Skill Tracker API
+  version: 1.0.0
+  description: SkillTrackerアプリのAPI
+
+paths:
+  /hello:
+    get:
+      summary: 疎通確認
+      responses:
+        "200":
+          description: 疎通確認成功
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "Hello World"
+
+  /login:
+    post:
+      summary: ユーザーログイン
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        "200":
+          description: ログイン成功
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=jwt_token; HttpOnly; Secure; SameSite=Strict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Login successful"
+        "401":
+          description: ログイン失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid email or password"
+
+  /logout:
+    post:
+      summary: ユーザーログアウト
+      responses:
+        "200":
+          description: ログアウト成功
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: token=; HttpOnly; Secure; SameSite=Strict; Expires=Thu, 01 Jan 1970 00:00:00 GMT
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Logout successful"
+
+  /users/search:
+    post:
+      summary: 条件に基づいたユーザー検索
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                skills:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      level:
+                        type: object
+                        properties:
+                          min:
+                            type: integer
+                            description: "Minimum skill level"
+                            minimum: 1
+                            maximum: 5
+                          max:
+                            type: integer
+                            description: "Maximum skill level"
+                            minimum: 1
+                            maximum: 5
+      responses:
+        "200":
+          description: 検索成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          description: 検索失敗（クエリパラメータ不正）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid search criteria"
+        "401":
+          description: 認証失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Unauthorized"
+  /users/{userId}:
+    get:
+      summary: ユーザー取得
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: ユーザーが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+
+  /skills/{skillId}:
+    put:
+      summary: 既存スキル編集
+      parameters:
+        - name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    description:
+                      type: string
+                    levelExplanation:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          level:
+                            type: integer
+                            minimum: 1
+                            maximum: 5
+                          explanation:
+                            type: string
+      responses:
+        "200":
+          description: 編集成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Skill updated successfully"
+        "404":
+          description: スキルが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Skill not found"
+
+  /skills/categories:
+    get:
+      summary: 全スキルカテゴリ取得
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  ref: "#/components/schemas/SkillCategory"
+
+  /users/{userId}/skills:
+    get:
+      summary: ユーザーのスキル取得
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSkill"
+        "404":
+          description: ユーザーまたはスキルが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User or skills not found"
+
+  /users/skills:
+    post:
+      summary: ユーザーのスキル登録・編集
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                  skillId:
+                    type: string
+                  level:
+                    type: integer
+                    minimum: 1
+                    maximum: 5
+                  interested:
+                    type: boolean
+      responses:
+        "200":
+          description: 登録・編集成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User skills updated successfully"
+        "400":
+          description: 登録・編集失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid skill data"
+
+  /users/{userId}/profile:
+    get:
+      summary: ユーザープロフィール取得
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "404":
+          description: プロフィールが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User profile not found"
+
+    put:
+      summary: ユーザープロフィール編集
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                notes:
+                  type: string
+                desires:
+                  type: string
+                dislikes:
+                  type: string
+      responses:
+        "200":
+          description: 編集成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User profile updated successfully"
+        "400":
+          description: 編集失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid profile data"
+        "404":
+          description: プロフィールが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User profile not found"
+
+  /admin/users:
+    post:
+      summary: 新規ユーザー登録
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                role:
+                  type: string
+                  enum: [admin, user]
+      responses:
+        "201":
+          description: 登録成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User created successfully"
+                  userId:
+                    type: string
+        "400":
+          description: 登録失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid user data"
+
+  /admin/users/{userId}:
+    delete:
+      summary: ユーザー削除
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 削除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User deleted successfully"
+        "404":
+          description: ユーザーが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+
+  /admin/skills:
+    post:
+      summary: 新規スキル作成
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                categoryId:
+                  type: number
+                levels:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      level:
+                        type: integer
+                        minimum: 1
+                        maximum: 5
+                      explanation:
+                        type: string
+      responses:
+        "201":
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Skill created successfully"
+                  skillId:
+                    type: string
+        "400":
+          description: 作成失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid skill data"
+
+  /admin/skills/{skillId}:
+    delete:
+      summary: スキル削除
+      parameters:
+        - name: skillId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: 削除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Skill deleted successfully"
+        "404":
+          description: スキルが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Skill not found"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+          format: email
+        lastName:
+          type: string
+        firstName:
+          type: string
+        lastNameKana:
+          type: string
+        firstNameKana:
+          type: string
+        role:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SkillCategory:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Skill:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        levels:
+          type: array
+          items:
+            type: object
+            properties:
+              level:
+                type: integer
+                minimum: 1
+                maximum: 5
+              explanation:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: number
+        userId:
+          type: number
+        notes:
+          type: string
+        desires:
+          type: string
+        dislikes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    UserSkill:
+      type: object
+      properties:
+        userId:
+          type: string
+        skillId:
+          type: string
+        level:
+          type: integer
+          minimum: 1
+          maximum: 5
+        interested:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
