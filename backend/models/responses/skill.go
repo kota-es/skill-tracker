@@ -6,10 +6,10 @@ import (
 
 type SkillResponse struct {
 	models.Skill
-	LevelExplanation []LevelExplanation `json:"explanation"`
+	Levels []SkillLevel `json:"levels"`
 }
 
-type LevelExplanation struct {
+type SkillLevel struct {
 	Level       int    `json:"level"`
 	Explanation string `json:"explanation"`
 }

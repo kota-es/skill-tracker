@@ -43,6 +43,23 @@ func GetAllSkills(db *sql.DB) ([]models.Skill, error) {
 		skill.CreatedAt = shared.JstTime{Time: CreatedAt}
 		skill.UpdatedAt = shared.JstTime{Time: UpdatedAt}
 
+		LevelResults, err := GetSkillLevelsBySkillID(db, skill.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		var skillLevels []models.PhilteredSkillLevel
+		for _, LevelResult := range LevelResults {
+			skillLevel := models.PhilteredSkillLevel{
+				Level:       LevelResult.Level,
+				Explanation: LevelResult.Explanation,
+			}
+			skillLevels = append(skillLevels, skillLevel)
+		}
+
+		skill.Levels = skillLevels
+		log.Printf("skills: %v", skills)
+
 		skills = append(skills, skill)
 	}
 

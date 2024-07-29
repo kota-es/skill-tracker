@@ -2,7 +2,9 @@ package repositories
 
 import (
 	"backend/models"
+	"backend/models/shared"
 	"database/sql"
+	"time"
 )
 
 func InsertSkillLevel(tx *sql.Tx, db *sql.DB, skillLevel models.SkillLevel) (models.SkillLevel, error) {
@@ -31,11 +33,14 @@ func GetSkillLevelsBySkillID(db *sql.DB, skillID int) ([]models.SkillLevel, erro
 	var skillLevels []models.SkillLevel
 	for rows.Next() {
 		var skillLevel models.SkillLevel
-		err := rows.Scan(&skillLevel.ID, &skillLevel.SkillID, &skillLevel.Level, &skillLevel.Explanation)
+		var CreatedAt, UpdatedAt time.Time
+		err := rows.Scan(&skillLevel.ID, &skillLevel.SkillID, &skillLevel.Level, &skillLevel.Explanation, &CreatedAt, &UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
 
+		skillLevel.CreatedAt = shared.JstTime{Time: CreatedAt}
+		skillLevel.UpdatedAt = shared.JstTime{Time: UpdatedAt}
 		skillLevels = append(skillLevels, skillLevel)
 	}
 

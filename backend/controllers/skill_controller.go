@@ -40,13 +40,13 @@ func (c *SkillController) PostSkill(w http.ResponseWriter, r *http.Request) {
 	var response responses.SkillResponse
 	response.Skill = skill
 
-	response.LevelExplanation = make([]responses.LevelExplanation, 0)
+	response.Levels = make([]responses.SkillLevel, 0)
 	for _, level := range skillLevels {
-		var levelResponse responses.LevelExplanation
+		var levelResponse responses.SkillLevel
 		levelResponse.Level = level.Level
 		levelResponse.Explanation = level.Explanation
 
-		response.LevelExplanation = append(response.LevelExplanation, levelResponse)
+		response.Levels = append(response.Levels, levelResponse)
 	}
 
 	json.NewEncoder(w).Encode(response)
