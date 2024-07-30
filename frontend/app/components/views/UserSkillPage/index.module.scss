@@ -1,0 +1,76 @@
+.skillListContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.categorySection {
+  width: 80%;
+  max-width: 800px;
+  margin-bottom: 2rem;
+}
+
+.categoryName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.table {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto auto 1fr; /* 自動調整される列 */
+  border-collapse: collapse;
+}
+
+.tableHeader {
+  display: contents; /* Grid内で使用される子要素をそのまま使用 */
+  background-color: #f1f1f1;
+  font-weight: bold;
+}
+
+.tableHeaderCell {
+  padding: 0.5rem;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+.tableRow {
+  display: contents; /* Grid内で使用される子要素をそのまま使用 */
+}
+
+.tableCell {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+
+.tableCellWide {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.skillLevel {
+  font-weight: bold;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  display: inline-block;
+  text-align: center; /* テキストを中央に配置 */
+}
+
+.interestedBadge {
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #fff;
+  background-color: #d9534f;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  text-align: center; /* テキストを中央に配置 */
+  margin-top: 0.5rem; /* スキル名とバッジの間の間隔を調整 */
+  align-self: flex-start; /* テキストの幅に合わせてバッジを表示 */
+}
