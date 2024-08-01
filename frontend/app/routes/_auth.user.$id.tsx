@@ -1,21 +1,12 @@
-import { json, useLoaderData } from "@remix-run/react";
+import { json, useLoaderData, useParams } from "@remix-run/react";
 import UserSkillPage from "@/components/views/UserSkillPage";
 import type { UserSkillData, UserSKills } from "@/types/UserSkillData";
+import { LoaderFunctionArgs } from "@remix-run/node";
 
 interface SkillCategoryType {
   id: number;
   name: string;
 }
-
-type Skill = {
-  id: number;
-  name: string;
-  skill_id: number;
-  skill_category_id: number;
-  description: string;
-  level?: number;
-  interested?: boolean;
-};
 
 type UserSkill = {
   id: number;
@@ -40,7 +31,7 @@ type SkillLevel = {
   explanation: string;
 };
 
-export const loader = async () => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
 
   const categoryRes = await fetch(`${BASE_URL}/skills/categories`, {
@@ -66,7 +57,7 @@ export const loader = async () => {
     skillData = await SkillsRes.json();
   }
 
-  const userSkillRes = await fetch(`${BASE_URL}/users/1/skills`, {
+  const userSkillRes = await fetch(`${BASE_URL}/users/${params.id}/skills`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -77,6 +68,9 @@ export const loader = async () => {
   if (userSkillRes.ok) {
     userSkills = await userSkillRes.json();
   }
+
+  console.log(userSkills);
+  console.log(userSkills);
 
   const userSkillData: UserSkillData = skillCategories.map(
     (category: SkillCategoryType) => {
@@ -123,7 +117,7 @@ export const loader = async () => {
 
 export const UserSkill = () => {
   const { userSkillData } = useLoaderData<typeof loader>();
-  console.log(userSkillData);
+
   return <UserSkillPage skillData={userSkillData} />;
 };
 

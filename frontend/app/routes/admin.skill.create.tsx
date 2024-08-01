@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Form, json, useLoaderData } from "@remix-run/react";
-import Header from "@/components/Header";
 import Button from "@/components/shared/Button";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { jsonWithSuccess, jsonWithError } from "remix-toast";
@@ -67,7 +66,6 @@ const SkillCreate: React.FC = () => {
 
   return (
     <>
-      <Header />
       <div className={styles.container}>
         <h1>スキル作成</h1>
         <Form method="POST" className={styles.form}>

@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
-import { LoaderFunctionArgs, json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { User } from "@/types/User";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { Outlet, json, redirect, useLoaderData } from "@remix-run/react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
@@ -17,26 +18,20 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/login");
   }
 
-  const resData = await res.json();
+  const resData: User = await res.json();
 
   return json({ user: resData });
 }
 
-export default function UserPage() {
+export const Auth = () => {
   const { user } = useLoaderData<typeof loader>();
 
   return (
     <div>
-      <div>
-        <Header />
-      </div>
-      <ul>
-        <li>{user.email}</li>
-        <li>
-          {user.lastname} {user.firstname}
-        </li>
-        <li>{user.role}</li>
-      </ul>
+      <Header isAdmin={user.role === "admin"} />
+      <Outlet />
     </div>
   );
-}
+};
+
+export default Auth;

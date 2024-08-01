@@ -1,6 +1,10 @@
 import styles from "./index.module.scss";
 
-export default function Header() {
+type Props = {
+  isAdmin?: boolean;
+};
+
+export const Header: React.FC<Props> = ({ isAdmin = false }) => {
   return (
     <header className={styles.header}>
       <div className={styles.site}>
@@ -17,20 +21,24 @@ export default function Header() {
           <li>
             <a href="/">ユーザ検索</a>
           </li>
-          <li>
-            <a href="/">管理メニュー</a>
-            <ul className={styles.dropdown}>
-              <li>
-                <a href="/">スキル登録</a>
-              </li>
-              <li>
-                <a href="/">ユーザ登録</a>
-              </li>
-            </ul>
-          </li>
+          {isAdmin && (
+            <li>
+              <a href="/">管理メニュー</a>
+              <ul className={styles.dropdown}>
+                <li>
+                  <a href="/">スキル登録</a>
+                </li>
+                <li>
+                  <a href="/">ユーザ登録</a>
+                </li>
+              </ul>
+            </li>
+          )}
         </ul>
         <button>ログアウト</button>
       </div>
     </header>
   );
-}
+};
+
+export default Header;

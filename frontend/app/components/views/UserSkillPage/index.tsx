@@ -8,8 +8,7 @@ type Props = {
 
 const UserSkillPage: React.FC<Props> = ({ skillData }) => {
   return (
-    <div>
-      <Header />
+    <>
       <div className={styles.skillListContainer}>
         {skillData.map((category) => (
           <div key={category.id} className={styles.categorySection}>
@@ -39,7 +38,7 @@ const UserSkillPage: React.FC<Props> = ({ skillData }) => {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
