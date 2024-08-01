@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"backend/models/shared"
 	"database/sql"
-	"log"
 	"time"
 )
 
@@ -58,7 +57,6 @@ func GetAllSkills(db *sql.DB) ([]models.Skill, error) {
 		}
 
 		skill.Levels = skillLevels
-		log.Printf("skills: %v", skills)
 
 		skills = append(skills, skill)
 	}
@@ -67,7 +65,6 @@ func GetAllSkills(db *sql.DB) ([]models.Skill, error) {
 }
 
 func UpSertUserSkill(tx *sql.Tx, db *sql.DB, userSkill models.UserSkill) (models.UserSkill, error) {
-	log.Printf("userSkill: %v", userSkill)
 	sqlStr := "INSERT INTO user_skills (user_id, skill_id, level, interested) VALUES ($1, $2, $3, $4) ON CONFLICT (user_id, skill_id) DO UPDATE SET level = $3, interested = $4, updated_at = now() RETURNING id"
 
 	var id int

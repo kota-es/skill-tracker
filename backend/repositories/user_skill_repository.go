@@ -16,7 +16,7 @@ func GetUserSkills(db *sql.DB, UserID int) ([]models.UserSkill, error) {
 	}
 	defer rows.Close()
 
-	var userSkills []models.UserSkill
+	userSkills := make([]models.UserSkill, 0)
 	for rows.Next() {
 		var userSkill models.UserSkill
 		var CreatedAt, UpdatedAt time.Time
