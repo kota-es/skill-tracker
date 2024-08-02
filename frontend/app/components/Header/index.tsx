@@ -1,3 +1,4 @@
+import { Link } from "@remix-run/react";
 import styles from "./index.module.scss";
 
 type Props = {
@@ -35,7 +36,7 @@ export const Header: React.FC<Props> = ({ isAdmin = false }) => {
             </li>
           )}
         </ul>
-        <button>ログアウト</button>
+        <Link to="/logout">ログアウト</Link>
       </div>
     </header>
   );
