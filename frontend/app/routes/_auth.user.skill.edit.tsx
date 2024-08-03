@@ -144,7 +144,6 @@ const SkillForm: React.FC = () => {
 
   return (
     <>
-      <Header />
       <div className={styles.container}>
         <h1>スキル登録</h1>
         <Form method="POST" className={styles.form}>

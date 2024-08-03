@@ -14,7 +14,7 @@ export const Header: React.FC<Props> = ({ isAdmin = false }) => {
       <div className={styles.rightSide}>
         <ul className={styles.nav}>
           <li>
-            <a href="/">スキル</a>
+            <a href="/user/skill/edit">スキル</a>
           </li>
           <li>
             <a href="/">プロフィール</a>
@@ -27,7 +27,7 @@ export const Header: React.FC<Props> = ({ isAdmin = false }) => {
               <a href="/">管理メニュー</a>
               <ul className={styles.dropdown}>
                 <li>
-                  <a href="/">スキル登録</a>
+                  <a href="/admin/skill/create">スキル作成</a>
                 </li>
                 <li>
                   <a href="/">ユーザ登録</a>
