@@ -14,10 +14,10 @@ export const Header: React.FC<Props> = ({ isAdmin = false }) => {
       <div className={styles.rightSide}>
         <ul className={styles.nav}>
           <li>
-            <a href="/user/skill/edit">スキル</a>
+            <a href="/user/skill/edit">スキル編集</a>
           </li>
           <li>
-            <a href="/">プロフィール</a>
+            <a href="/user/profile/edit">プロフィール編集</a>
           </li>
           <li>
             <a href="/">ユーザ検索</a>
