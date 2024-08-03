@@ -6,6 +6,9 @@ import (
 	"backend/models"
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type UserController struct {
@@ -34,4 +37,53 @@ func (c *UserController) PostUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(user)
+}
+
+func (c *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
+	strUserId := chi.URLParam(r, "user_id")
+	userId, err := strconv.Atoi(strUserId)
+	if err != nil {
+		err = apperrors.BadParam.Wrap(err, "Invalid user_id")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	user, err := c.services.User.FindByID(userId)
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
+}
+
+func (c *UserController) GetUserProfile(w http.ResponseWriter, r *http.Request) {
+	strUserId := chi.URLParam(r, "user_id")
+	userId, err := strconv.Atoi(strUserId)
+	if err != nil {
+		err = apperrors.BadParam.Wrap(err, "Invalid user_id")
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	user, err := c.services.User.FindProfileByID(userId)
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(user)
+}
+
+func (c *UserController) PostUserProfile(w http.ResponseWriter, r *http.Request) {
+	request := models.UserProfile{}
+	json.NewDecoder(r.Body).Decode(&request)
+
+	err := c.services.User.UpdateProfile(request)
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

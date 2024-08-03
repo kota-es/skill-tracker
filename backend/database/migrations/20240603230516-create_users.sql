@@ -15,7 +15,7 @@ create table if not exists users (
 
 create table user_profiles (
     id serial primary key,
-    user_id int not null,
+    user_id int not null unique,
     notes text,
     desires text,
     dislikes text,

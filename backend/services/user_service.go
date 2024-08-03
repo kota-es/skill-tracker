@@ -56,3 +56,29 @@ func (us *UserService) FindByID(id int) (models.User, error) {
 
 	return user, nil
 }
+
+func (us *UserService) FindProfileByID(id int) (models.UserProfile, error) {
+	userProfile, err := repositories.FindProfileByUserID(us.db, id)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			err = apperrors.NoData.Wrap(err, "user profile not found")
+			return models.UserProfile{}, err
+		}
+		err = apperrors.GetDataFailed.Wrap(err, "failed to get user")
+		return models.UserProfile{}, err
+	}
+
+	return userProfile, nil
+}
+
+func (us *UserService) UpdateProfile(profile models.UserProfile) error {
+	_, err := repositories.UpsertUserProfile(us.db, profile)
+
+	if err != nil {
+		err = apperrors.UpdateDataFailed.Wrap(err, "failed to update user profile")
+		return err
+	}
+
+	return nil
+}
