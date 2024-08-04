@@ -157,7 +157,7 @@ const SkillForm: React.FC = () => {
   return (
     <>
       <div className={styles.container}>
-        <h1>スキル登録</h1>
+        <h1>スキル編集</h1>
         <Form method="POST" className={styles.form}>
           {categories.map((category) => (
             <div key={category.id} className={styles.categorySection}>
