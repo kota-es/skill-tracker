@@ -6,6 +6,7 @@ type SearchedUser struct {
 	Lastname      string      `json:"lastname"`
 	FirstnameKana string      `json:"firstname_kana"`
 	LastnameKana  string      `json:"lastname_kana"`
+	Role          string      `json:"role"`
 	Profile       UserProfile `json:"profile"`
 	Skills        []UserSkill `json:"skills"`
 }

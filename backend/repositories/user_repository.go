@@ -83,11 +83,7 @@ func FindUserByID(db *sql.DB, id int) (models.User, error) {
 func SearchUsers(db *sql.DB) ([]models.SearchedUser, error) {
 	sqlStr := `
 			SELECT 
-					users.id, users.firstname, users.lastname, users.firstname_kana, users.lastname_kana, 
-					user_profiles.id, user_profiles.notes, user_profiles.desires, user_profiles.dislikes, 
-					user_profiles.created_at, user_profiles.updated_at,
-					user_skills.id, user_skills.skill_id, user_skills.level, user_skills.interested, 
-					user_skills.created_at, user_skills.updated_at
+					users.id, users.firstname, users.lastname, users.firstname_kana, users.lastname_kana, users.role,user_profiles.id, user_profiles.notes, user_profiles.desires, user_profiles.dislikes, user_profiles.created_at, user_profiles.updated_at, user_skills.id, user_skills.skill_id, user_skills.level, user_skills.interested, user_skills.created_at, user_skills.updated_at
 			FROM users 
 			LEFT JOIN user_profiles ON users.id = user_profiles.user_id 
 			LEFT JOIN user_skills ON users.id = user_skills.user_id
@@ -108,6 +104,7 @@ func SearchUsers(db *sql.DB) ([]models.SearchedUser, error) {
 			lastname         string
 			firstnameKana    string
 			lastnameKana     string
+			role             string
 			profileID        sql.NullInt64
 			notes            sql.NullString
 			desires          sql.NullString
@@ -123,7 +120,7 @@ func SearchUsers(db *sql.DB) ([]models.SearchedUser, error) {
 		)
 
 		err := rows.Scan(
-			&userID, &firstname, &lastname, &firstnameKana, &lastnameKana,
+			&userID, &firstname, &lastname, &firstnameKana, &lastnameKana, &role,
 			&profileID, &notes, &desires, &dislikes, &profileCreatedAt, &profileUpdatedAt,
 			&skillID, &skillSkillID, &level, &interested, &skillCreatedAt, &skillUpdatedAt,
 		)
@@ -139,6 +136,7 @@ func SearchUsers(db *sql.DB) ([]models.SearchedUser, error) {
 				Lastname:      lastname,
 				FirstnameKana: firstnameKana,
 				LastnameKana:  lastnameKana,
+				Role:          role,
 				Profile: models.UserProfile{
 					ID:        int(profileID.Int64),
 					UserID:    userID,
