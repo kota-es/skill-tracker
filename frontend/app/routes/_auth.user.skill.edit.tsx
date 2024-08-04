@@ -1,8 +1,7 @@
 import React from "react";
 import styles from "@/styles/routes/user.skill.register.module.scss";
-import Header from "@/components/Header";
 import { Form, json, useLoaderData } from "@remix-run/react";
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import Button from "@/components/shared/Button";
 import { jsonWithError, jsonWithSuccess } from "remix-toast";
 
@@ -45,8 +44,13 @@ type SkillRequest = {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const formData: any = await request.formData();
 
-  const sendData = { user_id: 1, skills: [] } as Request;
+  const sendData = {
+    user_id: Number(formData.get("user_id")),
+    skills: [],
+  } as Request;
   formData.forEach((value: any, key: string) => {
+    if (key === "user_id") return;
+
     const [type, strId] = key.split("_");
     const id = parseInt(strId);
 
@@ -79,7 +83,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
 
   const categoryRes = await fetch(`${BASE_URL}/skills/categories`, {
@@ -106,8 +110,16 @@ export const loader = async () => {
     skills = await SkillsRes.json();
   }
 
-  // TODO: ユーザーIDを取得する
-  const UserSkillRes = await fetch(`${BASE_URL}/users/1/skills`, {
+  const userRes = await fetch(`${BASE_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      Cookie: request.headers.get("Cookie") || "",
+    },
+    credentials: "include",
+  });
+  const user = await userRes.json();
+
+  const UserSkillRes = await fetch(`${BASE_URL}/users/${user.id}/skills`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -136,11 +148,11 @@ export const loader = async () => {
     return category;
   });
 
-  return json({ skillData });
+  return json({ userId: user.id, skillData });
 };
 
 const SkillForm: React.FC = () => {
-  const { skillData: categories } = useLoaderData<typeof loader>();
+  const { userId, skillData: categories } = useLoaderData<typeof loader>();
 
   return (
     <>
@@ -181,6 +193,7 @@ const SkillForm: React.FC = () => {
               ))}
             </div>
           ))}
+          <input type="hidden" name="user_id" value={userId} />
           <Button type="submit">登録</Button>
         </Form>
       </div>
