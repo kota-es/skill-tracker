@@ -57,8 +57,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const UserProfileEdit: React.FC = () => {
   const { userId, profileData } = useLoaderData<typeof loader>();
 
-  console.log(userId, profileData);
-
   return <UserProfileEditPage profileData={profileData} userId={userId} />;
 };
 

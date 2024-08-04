@@ -8,7 +8,7 @@ type Props = {
 
 export const UserListPage: React.FC<Props> = ({ userList }) => {
   const navigate = useNavigate();
-  console.log(userList);
+
   return (
     <>
       <div className={styles.container}>
