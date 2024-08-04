@@ -69,9 +69,6 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     userSkills = await userSkillRes.json();
   }
 
-  console.log(userSkills);
-  console.log(userSkills);
-
   const userSkillData: UserSkillData = skillCategories.map(
     (category: SkillCategoryType) => {
       const skillsInCategory = skillData.filter(
