@@ -39,6 +39,16 @@ func (c *UserController) PostUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+func (c *UserController) SearchUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := c.services.User.Search()
+	if err != nil {
+		apperrors.ErrorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(users)
+}
+
 func (c *UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	strUserId := chi.URLParam(r, "user_id")
 	userId, err := strconv.Atoi(strUserId)

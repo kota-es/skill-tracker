@@ -34,6 +34,7 @@ func NewRouter(db *sql.DB) *chi.Mux {
 	r.Post("/users/skills", skillController.PostUserSkill)
 	r.Post("/admin/skills", skillController.PostSkill)
 	r.Get("/skills/categories", skillController.GetSkillCategories)
+	r.Post("/users/search", userController.SearchUsers)
 
 	return r
 }

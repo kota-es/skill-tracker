@@ -82,3 +82,14 @@ func (us *UserService) UpdateProfile(profile models.UserProfile) error {
 
 	return nil
 }
+
+func (us *UserService) Search() ([]models.SearchedUser, error) {
+	users, err := repositories.SearchUsers(us.db)
+
+	if err != nil {
+		err = apperrors.GetDataFailed.Wrap(err, "failed to search users")
+		return nil, err
+	}
+
+	return users, nil
+}
