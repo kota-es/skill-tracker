@@ -1,4 +1,9 @@
-import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
 import { Form } from "@remix-run/react";
 
 import styles from "@/styles/routes/login.module.scss";
@@ -52,6 +57,24 @@ export async function action({ request }: ActionFunctionArgs) {
 
   return null;
 }
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const BASE_URL = import.meta.env.VITE_API_ORIGIN;
+
+  const userRes = await fetch(`${BASE_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      Cookie: request.headers.get("Cookie") || "",
+    },
+    credentials: "include",
+  });
+
+  if (userRes.status === 200) {
+    return redirect("/");
+  }
+
+  return null;
+};
 
 export default function LoginPage() {
   return (
