@@ -1,7 +1,8 @@
-import { json, useLoaderData, useParams } from "@remix-run/react";
+import { json, useLoaderData, useRouteLoaderData } from "@remix-run/react";
 import UserSkillPage from "@/components/views/UserSkillPage";
 import type { UserSkillData, UserSKills } from "@/types/UserSkillData";
 import { LoaderFunctionArgs } from "@remix-run/node";
+import { ProfileData } from "@/types/ProfileData";
 
 interface SkillCategoryType {
   id: number;
@@ -109,13 +110,28 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     }
   );
 
-  return json({ userSkillData });
+  const profileRes = await fetch(`${BASE_URL}/users/${params.id}/profile`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const profileData: ProfileData = await profileRes.json();
+
+  return json({ userSkillData, profileData });
 };
 
 export const UserSkill = () => {
-  const { userSkillData } = useLoaderData<typeof loader>();
+  const { userSkillData, profileData } = useLoaderData<typeof loader>();
+  const { user } = useRouteLoaderData("routes/_auth");
 
-  return <UserSkillPage skillData={userSkillData} />;
+  return (
+    <UserSkillPage
+      skillData={userSkillData}
+      profileData={profileData}
+      user={user}
+    />
+  );
 };
 
 export default UserSkill;

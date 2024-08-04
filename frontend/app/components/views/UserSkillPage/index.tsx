@@ -1,15 +1,30 @@
 import Header from "@/components/Header";
 import type { UserSkillData } from "@/types/UserSkillData";
 import styles from "./index.module.scss";
+import { ProfileData } from "@/types/ProfileData";
+import { User } from "@/types/User";
 
 type Props = {
   skillData: UserSkillData;
+  profileData: ProfileData;
+  user: User;
 };
 
-const UserSkillPage: React.FC<Props> = ({ skillData }) => {
+const UserSkillPage: React.FC<Props> = ({ skillData, profileData, user }) => {
   return (
     <>
       <div className={styles.skillListContainer}>
+        <h2>
+          {user.lastname} {user.firstname}
+        </h2>
+        <div className={styles.profileSection}>
+          <h3>経験</h3>
+          <p>{profileData.notes || "未登録"}</p>
+          <h3>やりたいこと</h3>
+          <p>{profileData.desires || "未登録"}</p>
+          <h3>やりたくないこと</h3>
+          <p>{profileData.dislikes || "未登録"}</p>
+        </div>
         {skillData.map((category) => (
           <div key={category.id} className={styles.categorySection}>
             <h3 className={styles.categoryName}>{category.name}</h3>
