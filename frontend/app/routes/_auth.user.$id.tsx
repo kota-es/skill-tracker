@@ -35,6 +35,14 @@ type SkillLevel = {
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const BASE_URL = import.meta.env.VITE_API_ORIGIN;
 
+  const userRes = await fetch(`${BASE_URL}/users/${params.id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const user = await userRes.json();
+
   const categoryRes = await fetch(`${BASE_URL}/skills/categories`, {
     method: "GET",
     headers: {
@@ -118,12 +126,11 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   });
   const profileData: ProfileData = await profileRes.json();
 
-  return json({ userSkillData, profileData });
+  return json({ userSkillData, profileData, user });
 };
 
 export const UserSkill = () => {
-  const { userSkillData, profileData } = useLoaderData<typeof loader>();
-  const { user } = useRouteLoaderData("routes/_auth");
+  const { userSkillData, profileData, user } = useLoaderData<typeof loader>();
 
   return (
     <UserSkillPage
