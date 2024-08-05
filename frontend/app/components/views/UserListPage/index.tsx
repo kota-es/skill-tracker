@@ -33,8 +33,8 @@ export const UserListPage: React.FC<Props> = ({ userList }) => {
                   {user.firstname_kana}）
                 </td>
                 <td>{user.role === "admin" ? "管理" : "一般"}</td>
-                <td>{user.profile.updated_at || "未設定"}</td>
-                <td>{user.lastUpdatedSkillDate || "未設定"}</td>
+                <td>{user.profile.updated_at || "未登録"}</td>
+                <td>{user.lastUpdatedSkillDate || "未登録"}</td>
               </tr>
             ))}
           </tbody>
